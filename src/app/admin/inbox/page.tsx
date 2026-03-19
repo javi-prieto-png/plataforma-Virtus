@@ -27,7 +27,7 @@ export default async function AdminInboxPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-6">
-            {feedbacks.map((fb) => (
+            {feedbacks.map((fb: any) => (
               <div key={fb.id} className="border border-zinc-800 bg-black p-6 relative group hover:border-cyan-500/50 transition-colors">
                 
                 {/* Cabecera del Mensaje */}
