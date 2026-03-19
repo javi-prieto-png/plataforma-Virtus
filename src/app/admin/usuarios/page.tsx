@@ -3,7 +3,7 @@ import CreateStudentForm from "./CreateStudentForm"; // Componente Cliente
 import DeleteStudentBtn from "./DeleteStudentBtn";   // Componente Cliente
 
 export default async function UsuariosAdminPage() {
-  const students = await getStudents();
+  const students: any[] = await getStudents();
 
   return (
     <div className="w-full">
