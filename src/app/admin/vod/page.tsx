@@ -48,7 +48,7 @@ export default async function AdminVODPage() {
                   </td>
                 </tr>
               ) : (
-                videos.map((vid) => (
+                videos.map((vid: any) => (
                   <tr key={vid.id} className="border-b border-zinc-900/50 hover:bg-zinc-950/50 transition-colors">
                     <td className="px-4 py-4">
                       <div className="font-bold text-white mb-1">{vid.title}</div>
