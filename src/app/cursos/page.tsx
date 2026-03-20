@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { getStudentVideos } from "@/actions/student";
 import Link from "next/link";
 import { getSession } from "@/lib/session";
