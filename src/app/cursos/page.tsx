@@ -78,7 +78,7 @@ export default async function CursosPage() {
             {fitnessVideos.length === 0 ? (
               <p className="text-zinc-700 italic text-sm font-mono">[ No hay contenidos disponibles ]</p>
             ) : (
-              fitnessVideos.map((video) => (
+              fitnessVideos.map((video: any) => (
                 <VideoCard key={video.id} video={video} />
               ))
             )}
