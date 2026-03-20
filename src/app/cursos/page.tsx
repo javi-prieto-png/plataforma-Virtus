@@ -14,10 +14,10 @@ export default async function CursosPage() {
     select: { hasAcceptedLegal: true }
   });
 
-  const nutritionVideos = videos.filter((v) => v.category === "NUTRITION");
-  const fitnessVideos = videos.filter((v) => v.category === "FITNESS");
+  const nutritionVideos = videos.filter((v: any) => v.category === "NUTRITION");
+  const fitnessVideos = videos.filter((v: any) => v.category === "FITNESS");
 
-  const watchedCount = videos.filter((v) => v.interactions[0]?.isWatched).length;
+  const watchedCount = videos.filter((v: any) => v.interactions[0]?.isWatched).length;
   const progressPercent = videos.length > 0 ? Math.round((watchedCount / videos.length) * 100) : 0;
 
   return (
