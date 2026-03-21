@@ -2,64 +2,74 @@ import { decrypt } from "@/lib/session";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { logoutAction } from "@/actions/auth";
+import prisma from "@/lib/prisma";
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
   const session = await decrypt(cookieStore.get("session")?.value);
 
-  // Redirigimos explícitamente a Login si accedió de forma anómala (redundancia técnica)
   if (!session) redirect("/login");
 
-  const isAdmin = session.role === "ADMIN";
+  // Recuperar datos reales para el saludo
+  const user = await prisma.user.findUnique({ where: { id: session.userId } });
 
   return (
-    <div className="min-h-screen bg-black text-white p-8 selection:bg-cyan-500 selection:text-black font-sans">
-      <header className="max-w-6xl mx-auto flex justify-between items-center border-b border-zinc-900 pb-6 mb-12 relative">
-        <h1 className="text-xl font-bold tracking-widest uppercase">
-          SYS<span className="text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]">ANTIGRAVITY</span>
-        </h1>
-        <div className="flex gap-4 items-center">
-          <span className="text-zinc-500 text-xs tracking-widest uppercase font-mono">
-            ID: {session.userId.slice(0, 8)} | ROL: {session.role}
-          </span>
-            <form action={logoutAction}>
-              <button className="text-xs text-red-500 hover:text-red-400 font-mono border border-red-500/30 px-3 py-1 bg-red-500/10 hover:bg-red-500/20 transition-all uppercase tracking-widest">
-                [ ABORTAR_SESION ]
-              </button>
-            </form>
-        </div>
+    <div className="animate-in fade-in duration-700">
+      <header className="mb-12">
+        <h2 className="text-3xl font-light tracking-[0.2em] text-white uppercase">
+          Bienvenido, <span className="text-cyan-400 font-bold">{user?.name.split(' ')[0]}</span>
+        </h2>
+        <p className="text-zinc-500 text-xs tracking-[0.4em] uppercase mt-2">
+          Estado del sistema: <span className="text-cyan-500/80 underline decoration-cyan-500/30">Operativo</span> | Protocolo: <span className="text-zinc-300">Entrenamiento_VOD</span>
+        </p>
       </header>
 
-      <main className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        
-        {isAdmin && (
-          <a href="/admin" className="group p-8 bg-zinc-950 border border-zinc-900 hover:border-cyan-500 transition-all relative overflow-hidden block">
-            <div className="absolute top-0 right-0 w-16 h-16 bg-cyan-500/10 rounded-bl-full group-hover:bg-cyan-500/20 transition-colors" />
-            <h2 className="text-xl font-bold mb-2 uppercase text-cyan-400">Portal Admin</h2>
-            <p className="text-sm text-zinc-500 tracking-wide font-light">
-              Control de usuarios, analíticas y gestión del buzón de feedback.
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        {/* TARJETA NUTRICIÓN */}
+        <Link href="/cursos" className="group relative p-10 bg-zinc-950 border border-zinc-900 hover:border-cyan-500/50 transition-all overflow-hidden block shadow-2xl">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/5 rounded-bl-[100px] group-hover:bg-cyan-500/10 transition-colors" />
+          <div className="relative z-10">
+            <div className="text-[10px] text-cyan-500 tracking-[0.5em] font-bold uppercase mb-4">Módulo 01</div>
+            <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-cyan-400 transition-colors uppercase">VOD Nutrición</h3>
+            <p className="text-zinc-500 text-sm font-light leading-relaxed mb-8 max-w-[280px]">
+              Domina tu alimentación con clases magistrales y protocolos específicos de nutrición deportiva.
             </p>
-          </a>
-        )}
-
-        <Link href="/cursos" className="group p-8 bg-zinc-950 border border-zinc-900 hover:border-cyan-500 transition-all relative overflow-hidden block">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-cyan-500/10 rounded-bl-full group-hover:bg-cyan-500/20 transition-colors" />
-          <h2 className="text-xl font-bold mb-2 uppercase text-white group-hover:text-cyan-400 transition-colors">VOD - Nutrición</h2>
-          <p className="text-sm text-zinc-500 tracking-wide font-light">
-            Cursos teóricos, pautas dietéticas y masterclasses.
-          </p>
+            <span className="text-[10px] text-zinc-400 tracking-[0.3em] uppercase group-hover:translate-x-2 inline-block transition-transform">❯ Acceder a la biblioteca</span>
+          </div>
         </Link>
 
-        <Link href="/cursos" className="group p-8 bg-zinc-950 border border-zinc-900 hover:border-cyan-500 transition-all relative overflow-hidden block">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-cyan-500/10 rounded-bl-full group-hover:bg-cyan-500/20 transition-colors" />
-          <h2 className="text-xl font-bold mb-2 uppercase text-white group-hover:text-cyan-400 transition-colors">VOD - Fitness</h2>
-          <p className="text-sm text-zinc-500 tracking-wide font-light">
-            Rutinas de entrenamiento, biometría y ejecución técnica.
-          </p>
+        {/* TARJETA FITNESS */}
+        <Link href="/cursos" className="group relative p-10 bg-zinc-950 border border-zinc-900 hover:border-cyan-500/50 transition-all overflow-hidden block shadow-2xl">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/5 rounded-bl-[100px] group-hover:bg-cyan-500/10 transition-colors" />
+          <div className="relative z-10">
+            <div className="text-[10px] text-cyan-500 tracking-[0.5em] font-bold uppercase mb-4">Módulo 02</div>
+            <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-cyan-400 transition-colors uppercase">VOD Fitness</h3>
+            <p className="text-zinc-500 text-sm font-light leading-relaxed mb-8 max-w-[280px]">
+              Perfecciona tu técnica y potencia tus entrenamientos con nuestra videoteca de ejercicios avanzada.
+            </p>
+            <span className="text-[10px] text-zinc-400 tracking-[0.3em] uppercase group-hover:translate-x-2 inline-block transition-transform">❯ Acceder a la biblioteca</span>
+          </div>
         </Link>
+      </section>
 
-      </main>
+      {/* QUICK STATUS (PROGRESO SIMULADO) */}
+      <footer className="border-t border-zinc-900 pt-10">
+        <h4 className="text-[10px] text-zinc-500 tracking-[0.5em] uppercase font-bold mb-6 text-center">Resumen de Actividad</h4>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+           <div className="p-4 border border-zinc-900/50 bg-zinc-950/30 text-center">
+              <p className="text-zinc-600 text-[9px] uppercase tracking-widest mb-1">Vídeos Completos</p>
+              <p className="text-xl font-mono text-cyan-500">0</p>
+           </div>
+           <div className="p-4 border border-zinc-900/50 bg-zinc-950/30 text-center">
+              <p className="text-zinc-600 text-[9px] uppercase tracking-widest mb-1">Dudas Reportadas</p>
+              <p className="text-xl font-mono text-cyan-500">0</p>
+           </div>
+           <div className="p-4 border border-zinc-900/50 bg-zinc-950/30 text-center">
+              <p className="text-zinc-600 text-[9px] uppercase tracking-widest mb-1">Días en Sistema</p>
+              <p className="text-xl font-mono text-cyan-500">1</p>
+           </div>
+        </div>
+      </footer>
     </div>
   );
 }
