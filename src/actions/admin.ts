@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
+import { sendMail, getWelcomeEmailTemplate } from "@/lib/mail";
 
 // ==========================================
 // 1. GESTIÓN DE ALUMNOS (CRUD)
@@ -35,10 +36,13 @@ export async function createStudentAction(formData: FormData) {
       }
     });
 
-    // SIMULACIÓN DE ENVÍO DE CORREO
-    console.log(`\n\n[ADMIN-SYSTEM] 📧 ENVIANDO CORREO A: ${email}`);
-    console.log(`[ADMIN-SYSTEM] Asunto: Bienvenid@ a Antigravity`);
-    console.log(`[ADMIN-SYSTEM] Body: Tu contraseña temporal es [ ${rawPassword} ]. Por favor cambiala al ingresar.\n\n`);
+    // ENVÍO DE CORREO REAL
+    await sendMail({
+      to: email,
+      subject: "Bienvenido a Antigravity - Tus Credenciales de Acceso",
+      html: getWelcomeEmailTemplate(name, rawPassword),
+      text: `Hola ${name}, tu contraseña temporal para Antigravity es: ${rawPassword}`
+    });
 
     revalidatePath("/admin/usuarios");
     return { success: true };

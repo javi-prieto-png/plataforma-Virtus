@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { sendMail, getPasswordResetEmailTemplate } from "@/lib/mail";
 
 export async function requestPasswordResetAction(formData: FormData) {
   const email = formData.get("email") as string;
@@ -10,10 +11,16 @@ export async function requestPasswordResetAction(formData: FormData) {
   try {
     const user = await prisma.user.findUnique({ where: { email } });
     
-    // Por seguridad, siempre devolvemos éxito incluso si el usuario no existe
+    // Por seguridad, siempre devolvemos éxito incluso si el usuario no existe (previene user enumeration)
     if (user) {
-      console.log(`[AUTH_RECOVERY] Simulando envío de correo de recuperación a: ${email}`);
-      console.log(`[AUTH_RECOVERY] Token generado (simulado): recovery_${Math.random().toString(36).substr(2, 9)}`);
+      const token = `recovery_${Math.random().toString(36).substr(2, 9)}`;
+      
+      await sendMail({
+        to: email,
+        subject: "Recuperación de Contraseña - Antigravity",
+        html: getPasswordResetEmailTemplate(token),
+        text: `Tu código de recuperación es: ${token}`
+      });
     }
 
     return { 
