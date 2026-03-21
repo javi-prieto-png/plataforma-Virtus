@@ -19,6 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             SYS<span className="text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]">ADMIN</span>
           </h1>
           <nav className="flex flex-col space-y-6">
+            <Link href="/admin" className="text-xs tracking-widest uppercase text-zinc-500 hover:text-cyan-400 hover:translate-x-1 transition-all">❯ Dashboard</Link>
             <Link href="/admin/usuarios" className="text-xs tracking-widest uppercase text-zinc-500 hover:text-cyan-400 hover:translate-x-1 transition-all">❯ Alumnos</Link>
             <Link href="/admin/vod" className="text-xs tracking-widest uppercase text-zinc-500 hover:text-cyan-400 hover:translate-x-1 transition-all">❯ Contenidos</Link>
             <Link href="/admin/inbox" className="text-xs tracking-widest uppercase text-zinc-500 hover:text-cyan-400 hover:translate-x-1 transition-all">❯ Buzón Feedback</Link>

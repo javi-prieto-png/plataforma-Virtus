@@ -1,6 +1,8 @@
 import { decrypt } from "@/lib/session";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { logoutAction } from "@/actions/auth";
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
@@ -21,12 +23,11 @@ export default async function DashboardPage() {
           <span className="text-zinc-500 text-xs tracking-widest uppercase font-mono">
             ID: {session.userId.slice(0, 8)} | ROL: {session.role}
           </span>
-          <form action="/api/auth/logout" method="POST">
-            {/* TODO: implementar action de logout */}
-            <button className="text-xs text-red-500 hover:text-red-400 font-mono border border-red-500/30 px-3 py-1 bg-red-500/10 hover:bg-red-500/20 transition-all uppercase tracking-widest">
-              [ ABORTAR_SESION ]
-            </button>
-          </form>
+            <form action={logoutAction}>
+              <button className="text-xs text-red-500 hover:text-red-400 font-mono border border-red-500/30 px-3 py-1 bg-red-500/10 hover:bg-red-500/20 transition-all uppercase tracking-widest">
+                [ ABORTAR_SESION ]
+              </button>
+            </form>
         </div>
       </header>
 
@@ -42,21 +43,21 @@ export default async function DashboardPage() {
           </a>
         )}
 
-        <a href="/cursos-nutricion" className="group p-8 bg-zinc-950 border border-zinc-900 hover:border-cyan-500 transition-all relative overflow-hidden block">
+        <Link href="/cursos" className="group p-8 bg-zinc-950 border border-zinc-900 hover:border-cyan-500 transition-all relative overflow-hidden block">
           <div className="absolute top-0 right-0 w-16 h-16 bg-cyan-500/10 rounded-bl-full group-hover:bg-cyan-500/20 transition-colors" />
           <h2 className="text-xl font-bold mb-2 uppercase text-white group-hover:text-cyan-400 transition-colors">VOD - Nutrición</h2>
           <p className="text-sm text-zinc-500 tracking-wide font-light">
             Cursos teóricos, pautas dietéticas y masterclasses.
           </p>
-        </a>
+        </Link>
 
-        <a href="/cursos-fitness" className="group p-8 bg-zinc-950 border border-zinc-900 hover:border-cyan-500 transition-all relative overflow-hidden block">
+        <Link href="/cursos" className="group p-8 bg-zinc-950 border border-zinc-900 hover:border-cyan-500 transition-all relative overflow-hidden block">
           <div className="absolute top-0 right-0 w-16 h-16 bg-cyan-500/10 rounded-bl-full group-hover:bg-cyan-500/20 transition-colors" />
           <h2 className="text-xl font-bold mb-2 uppercase text-white group-hover:text-cyan-400 transition-colors">VOD - Fitness</h2>
           <p className="text-sm text-zinc-500 tracking-wide font-light">
             Rutinas de entrenamiento, biometría y ejecución técnica.
           </p>
-        </a>
+        </Link>
 
       </main>
     </div>

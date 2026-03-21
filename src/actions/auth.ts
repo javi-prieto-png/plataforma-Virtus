@@ -2,8 +2,13 @@
 
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { createSession } from "@/lib/session";
+import { createSession, deleteSession } from "@/lib/session";
 import { redirect } from "next/navigation";
+
+export async function logoutAction() {
+  await deleteSession();
+  redirect("/login");
+}
 
 export async function loginAction(formData: FormData) {
   const email = formData.get("email") as string;
