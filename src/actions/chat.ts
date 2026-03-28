@@ -103,13 +103,12 @@ export async function getConversationAction(otherUserId?: string, videoId?: stri
 
     let targetId = otherUserId;
 
-    if (session.role === "STUDENT") {
+    // Si no se especifica interlocutor (Vista Alumno), buscar a un administrador por defecto
+    if (!targetId) {
       const admin = await prisma.user.findFirst({ where: { role: "ADMIN" } });
       if (!admin) return { error: "Admin no encontrado." };
       targetId = admin.id;
     }
-
-    if (!targetId) return { error: "Interlocutor no definido." };
 
     if (session.userId === targetId || session.role === "ADMIN") {
       await (prisma.message as any).updateMany({
