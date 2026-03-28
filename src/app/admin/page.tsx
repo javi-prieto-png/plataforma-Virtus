@@ -16,10 +16,10 @@ export default async function AdminDashboardPage() {
     <div className="space-y-12">
       <header>
         <h1 className="text-3xl font-light tracking-[0.2em] uppercase italic">
-          PANEL DE <span className="text-cyan-400 font-bold">CONTROL</span>
+          PANEL DE <span className="text-cyan-400 font-bold">CONTROL</span> VIRTUS
         </h1>
-        <p className="text-zinc-500 text-xs tracking-widest uppercase mt-2">
-          Gestión centralizada del sistema Antigravity
+        <p className="text-zinc-500 text-[10px] tracking-widest uppercase mt-2">
+          Gestión centralizada del ecosistema de alto rendimiento.
         </p>
       </header>
 
@@ -44,20 +44,24 @@ export default async function AdminDashboardPage() {
       <section className="p-8 border border-zinc-900 bg-black relative">
         <div className="absolute top-0 left-0 w-[2px] h-full bg-cyan-500/20" />
         <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-cyan-500 mb-6">
-          ACCESOS RÁPIDOS
+          ACCESOS RÁPIDOS_VIRTUS
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Link href="/admin/vod" className="text-sm text-zinc-400 hover:text-white transition-colors flex items-center gap-3 group">
             <span className="w-1.5 h-1.5 bg-zinc-800 group-hover:bg-cyan-500 transition-colors" />
-            Subir nuevo contenido de Nutrición/Fitness
+            Subir nuevo contenido a Biblioteca
           </Link>
           <Link href="/admin/usuarios" className="text-sm text-zinc-400 hover:text-white transition-colors flex items-center gap-3 group">
             <span className="w-1.5 h-1.5 bg-zinc-800 group-hover:bg-cyan-500 transition-colors" />
-            Dar de alta a nuevos alumnos
+            VIRTUS_ONBOARDING: Nuevos Alumnos
           </Link>
-          <Link href="/admin/inbox" className="text-sm text-zinc-400 hover:text-white transition-colors flex items-center gap-3 group">
+          <Link href="/admin/chat" className="text-sm text-zinc-400 hover:text-white transition-colors flex items-center gap-3 group">
             <span className="w-1.5 h-1.5 bg-zinc-800 group-hover:bg-cyan-500 transition-colors" />
-            Revisar dudas y motivos de dislike
+            Atención Directa: VIRTUS_CHAT
+          </Link>
+          <Link href="/admin/configuracion" className="text-sm text-zinc-400 hover:text-white transition-colors flex items-center gap-3 group">
+            <span className="w-1.5 h-1.5 bg-zinc-800 group-hover:bg-cyan-500 transition-colors" />
+            Configuración de Sistema & Roles
           </Link>
         </div>
       </section>

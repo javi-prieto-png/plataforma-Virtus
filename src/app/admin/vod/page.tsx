@@ -1,5 +1,6 @@
 import { getVideos } from "@/actions/admin";
 import CreateVideoForm from "./CreateVideoForm";
+import DeleteVideoButton from "./DeleteVideoButton";
 
 export default async function AdminVODPage() {
   const videos = await getVideos();
@@ -35,34 +36,38 @@ export default async function AdminVODPage() {
           <table className="w-full text-left text-sm text-zinc-400">
             <thead className="text-xs uppercase bg-black text-cyan-500 border-b border-zinc-900 tracking-widest">
               <tr>
-                <th className="px-4 py-3 font-medium">Título del Video</th>
+                <th className="px-4 py-3 font-medium">Contenido VIRTUS</th>
                 <th className="px-4 py-3 font-medium">Categoría</th>
                 <th className="px-4 py-3 font-medium">Fecha</th>
+                <th className="px-4 py-3 font-medium text-right">Acción</th>
               </tr>
             </thead>
             <tbody>
               {videos.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-4 py-8 text-center text-zinc-700 italic border-b border-zinc-900/50">
-                    Base de datos VOD vacía.
+                  <td colSpan={4} className="px-4 py-8 text-center text-zinc-700 italic border-b border-zinc-900/50">
+                    Sin contenidos registrados.
                   </td>
                 </tr>
               ) : (
                 videos.map((vid: any) => (
                   <tr key={vid.id} className="border-b border-zinc-900/50 hover:bg-zinc-950/50 transition-colors">
                     <td className="px-4 py-4">
-                      <div className="font-bold text-white mb-1">{vid.title}</div>
+                      <div className="font-bold text-white mb-1 uppercase tracking-wider">{vid.title}</div>
                       <a href={vid.youtubeLink} target="_blank" rel="noreferrer" className="text-[10px] text-cyan-600 font-mono hover:text-cyan-400 hover:underline">
-                        [ YOUTUBE_RAW_LINK ]
+                        [ LINK_YOUTUBE ]
                       </a>
                     </td>
                     <td className="px-4 py-4">
                       <span className="px-2 py-1 bg-zinc-900 text-zinc-300 border border-zinc-800 text-[10px] uppercase font-mono tracking-widest">
-                        {vid.category === "NUTRITION" ? "Nutrición" : "Fitness"}
+                        {vid.category === "NUTRITION" ? "Nutrición" : vid.category === "FITNESS" ? "Fitness" : "Mindfulness"}
                       </span>
                     </td>
                     <td className="px-4 py-4 text-xs font-mono text-zinc-600">
                       {new Date(vid.uploadDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-4 text-right">
+                      <DeleteVideoButton videoId={vid.id} />
                     </td>
                   </tr>
                 ))

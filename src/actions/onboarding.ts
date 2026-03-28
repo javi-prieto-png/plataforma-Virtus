@@ -38,6 +38,7 @@ export async function changePasswordAction(formData: FormData) {
 export async function completeProfileAction(formData: FormData) {
   const name = formData.get("name") as string;
   const phone = formData.get("phone") as string;
+  const profilePic = formData.get("profilePic") as string;
   
   if (!name || !phone) return { error: "Todos los campos son obligatorios." };
 
@@ -45,13 +46,12 @@ export async function completeProfileAction(formData: FormData) {
   const sessionData = await decrypt(cookieStore.get("session")?.value);
   if (!sessionData) return { error: "Sesión inválida." };
 
-  // TODO: Agregar lógica de subida de imagen para `profilePic` (S3/Cloudinary/Local) si es necesario.
-
   await prisma.user.update({
     where: { id: sessionData.userId },
     data: { 
       name,
       phone,
+      profilePic: profilePic || null,
       isProfileComplete: true // Levantamos la restricción del guardian 2
     },
   });

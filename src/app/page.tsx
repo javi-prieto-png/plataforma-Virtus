@@ -9,11 +9,11 @@ export default function Home() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200%] h-32 bg-cyan-500/10 blur-[80px] -z-10 group-hover:bg-cyan-500/20 transition-colors duration-500" />
 
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-widest uppercase mb-6 text-center">
-          <span className="text-zinc-600">SYS_</span><span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-600 drop-shadow-[0_0_12px_rgba(34,211,238,0.8)]">ANTIGRAVITY</span>
+          <span className="text-zinc-600">PROYECTO_</span><span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-600 drop-shadow-[0_0_12px_rgba(34,211,238,0.8)]">VIRTUS</span>
         </h1>
         
         <p className="text-zinc-400 text-center max-w-xl mb-12 text-lg font-light tracking-wide leading-relaxed">
-          Plataforma privada de nutrición y fitness. Entorno seguro, acceso estrictamente controlado.
+          Plataforma avanzada de entrenamiento y salud integral. Entorno de alto rendimiento con acceso privado.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto">

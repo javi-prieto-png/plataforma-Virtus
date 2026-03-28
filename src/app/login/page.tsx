@@ -43,7 +43,7 @@ export default function LoginPage() {
               name="email"
               required
               className="bg-black border border-zinc-800 p-3 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
-              placeholder="agent@antigravity.sys"
+              placeholder="user@virtus.sys"
             />
           </div>
 

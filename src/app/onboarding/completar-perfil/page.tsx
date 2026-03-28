@@ -7,6 +7,8 @@ export default function CompletarPerfilPage() {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  const [profilePic, setProfilePic] = useState<string>("");
+
   async function handleAction(formData: FormData) {
     setError(null);
     startTransition(async () => {
@@ -32,13 +34,26 @@ export default function CompletarPerfilPage() {
         )}
 
         <form action={handleAction} className="flex flex-col gap-6">
-          <div className="flex flex-col items-center justify-center gap-4 mb-4">
-            <div className="w-24 h-24 rounded-full border border-zinc-800 flex items-center justify-center overflow-hidden bg-black text-xs text-zinc-600 uppercase tracking-widest text-center">
-              FOTO<br/>PERFIL
+          <div className="flex flex-col items-center justify-center gap-6 mb-4">
+            <div className="w-24 h-24 rounded-full border border-zinc-800 flex items-center justify-center overflow-hidden bg-black text-xs text-zinc-600 uppercase tracking-widest text-center shadow-[0_0_15px_rgba(34,211,238,0.1)]">
+              {profilePic ? (
+                <img src={profilePic} alt="Preview" className="w-full h-full object-cover" />
+              ) : (
+                <>FOTO<br/>PERFIL</>
+              )}
             </div>
-            <p className="text-xs text-cyan-500 hover:text-cyan-400 cursor-pointer uppercase tracking-widest font-bold transition-colors">
-              + SUBIR IMAGEN
-            </p>
+            
+            <div className="w-full flex flex-col gap-2">
+              <label className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold text-center">Enlace Externo de Imagen</label>
+              <input
+                type="url"
+                name="profilePic"
+                placeholder="https://ejemplo.com/foto.jpg"
+                className="bg-black border border-zinc-800 p-2 text-[10px] text-cyan-400 focus:outline-none focus:border-cyan-500 transition-colors text-center font-mono"
+                value={profilePic}
+                onChange={(e) => setProfilePic(e.target.value)}
+              />
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">

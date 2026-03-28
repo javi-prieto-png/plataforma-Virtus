@@ -23,7 +23,7 @@ export default async function VideoDetailPage({ params }: { params: { id: string
           VOLVER_A_BIBLIOTECA
         </Link>
         <div className="text-[10px] font-bold tracking-[0.3em] uppercase">
-          ANTIGRAVITY <span className="text-cyan-500">VOD</span>
+          VIRTUS <span className="text-cyan-500">VOD</span>
         </div>
       </nav>
 

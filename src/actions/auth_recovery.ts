@@ -17,9 +17,9 @@ export async function requestPasswordResetAction(formData: FormData) {
       
       await sendMail({
         to: email,
-        subject: "Recuperación de Contraseña - Antigravity",
+        subject: "Restablecer Contraseña - VIRTUS",
         html: getPasswordResetEmailTemplate(token),
-        text: `Tu código de recuperación es: ${token}`
+        text: `Has solicitado restablecer tu contraseña en VIRTUS. Tu código es: ${token}`
       });
     }
 

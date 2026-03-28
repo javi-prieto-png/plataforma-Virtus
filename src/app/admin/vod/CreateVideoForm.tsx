@@ -36,16 +36,25 @@ export default function CreateVideoForm() {
         className="w-full bg-black border border-zinc-800 p-3 text-sm text-cyan-200 focus:outline-none focus:border-cyan-500 transition-colors placeholder:text-zinc-600"
       />
 
-      <div className="flex flex-col gap-2 mt-2">
-        <label className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono">Categorización Estricta</label>
-        <select 
-          name="category" required 
-          className="w-full bg-black border border-zinc-800 p-3 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors cursor-pointer"
-        >
-          <option value="NUTRITION">Nutrición (Pautas y Dieta)</option>
-          <option value="FITNESS">Entrenamiento & Biomecánica</option>
-        </select>
-      </div>
+          <div className="flex flex-col gap-2 mt-2">
+            <label className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono">Categorización Estricta</label>
+            <select 
+              name="category" required 
+              className="w-full bg-black border border-zinc-800 p-3 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors cursor-pointer"
+            >
+              <option value="NUTRITION">Nutrición (Pautas y Dieta)</option>
+              <option value="FITNESS">Entrenamiento & Biomecánica</option>
+              <option value="MINDFULNESS">Mindfulness & Foco</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-2 mt-2">
+            <label className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono">Fecha de Publicación</label>
+            <input
+              type="date" name="uploadDate"
+              className="w-full bg-black border border-zinc-800 p-3 text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
+            />
+          </div>
 
       <button
         type="submit" disabled={isPending}

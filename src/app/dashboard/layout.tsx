@@ -20,17 +20,17 @@ export default async function DashboardLayout({
       <aside className="w-64 border-r border-zinc-900 flex flex-col p-8 fixed h-full bg-black z-50">
         <div className="mb-12">
           <h1 className="text-xl font-bold tracking-widest uppercase">
-            SYS<span className="text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]">ANTIGRAVITY</span>
+            VIRTUS<span className="text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)] font-extrabold">.</span>
           </h1>
-          <p className="text-[10px] text-zinc-600 tracking-[0.3em] uppercase mt-2">Core Platform v1.0</p>
+          <p className="text-[10px] text-zinc-600 tracking-[0.3em] uppercase mt-2">Core Platform v2.0</p>
         </div>
 
         <nav className="flex flex-col space-y-8 flex-grow">
           <div className="flex flex-col space-y-4">
             <p className="text-[10px] text-zinc-500 tracking-widest uppercase font-bold">Navegación</p>
             <Link href="/dashboard" className="text-xs tracking-widest uppercase text-zinc-400 hover:text-cyan-400 hover:translate-x-1 transition-all active:text-cyan-400">❯ Inicio</Link>
-            <Link href="/cursos" className="text-xs tracking-widest uppercase text-zinc-400 hover:text-cyan-400 hover:translate-x-1 transition-all">❯ VOD Nutrición</Link>
-            <Link href="/cursos" className="text-xs tracking-widest uppercase text-zinc-400 hover:text-cyan-400 hover:translate-x-1 transition-all">❯ VOD Fitness</Link>
+            <Link href="/cursos" className="text-xs tracking-widest uppercase text-zinc-400 hover:text-cyan-400 hover:translate-x-1 transition-all">❯ Biblioteca de Videos</Link>
+            <Link href="/dashboard/chat" className="text-xs tracking-widest uppercase text-zinc-400 hover:text-cyan-400 hover:translate-x-1 transition-all">❯ Buzón (Chat)</Link>
           </div>
 
           <div className="flex flex-col space-y-4 pt-4 border-t border-zinc-900">
@@ -48,8 +48,8 @@ export default async function DashboardLayout({
                 {session.role[0]}
              </div>
              <div className="flex flex-col">
-                <span className="text-[10px] text-zinc-300 font-bold tracking-wider uppercase truncate max-w-[120px]">ALUMNO_{session.userId.slice(0,6)}</span>
-                <span className="text-[9px] text-zinc-600 tracking-widest uppercase">ID: {session.userId.slice(0,8)}</span>
+                <span className="text-[10px] text-zinc-300 font-bold tracking-wider uppercase truncate max-w-[120px]">USER_{session.userId.slice(0,6)}</span>
+                <span className="text-[9px] text-zinc-600 tracking-widest uppercase">VIRTUS_ID: {session.userId.slice(0,8)}</span>
              </div>
           </div>
           <form action={logoutAction}>

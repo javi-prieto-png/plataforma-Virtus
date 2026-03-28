@@ -9,85 +9,102 @@ export default async function CursosPage() {
   const videos = await getStudentVideos();
   const session = await getSession();
   
-  // Obtenemos el estado directo de la DB para el interceptor
   const user = await prisma.user.findUnique({
     where: { id: session?.id },
-    select: { hasAcceptedLegal: true }
+    select: { hasAcceptedLegal: true, name: true }
   });
 
   const nutritionVideos = videos.filter((v: any) => v.category === "NUTRITION");
   const fitnessVideos = videos.filter((v: any) => v.category === "FITNESS");
+  const mindfulnessVideos = videos.filter((v: any) => v.category === "MINDFULNESS");
 
   const watchedCount = videos.filter((v: any) => v.interactions[0]?.isWatched).length;
   const progressPercent = videos.length > 0 ? Math.round((watchedCount / videos.length) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-black text-white p-6 md:p-12">
+    <div className="min-h-screen bg-black text-white p-4 md:p-12 animate-in fade-in duration-1000">
       <LegalNotice userHasAccepted={user?.hasAcceptedLegal || false} />
-      {/* Header & Progreso */}
-      <header className="mb-8 md:mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-zinc-900 pb-8">
-        <div>
-          <h1 className="text-2xl md:text-4xl font-light tracking-[0.2em] uppercase">
-            BIBLIOTECA <span className="text-cyan-400 font-bold">VOD</span>
-          </h1>
-          <p className="text-zinc-500 text-[10px] md:text-xs tracking-widest uppercase mt-3">
-            Contenidos exclusivos y pautas personalizadas.
-          </p>
-        </div>
-        
-        <div className="w-full md:w-64">
-          <div className="flex justify-between text-[10px] uppercase tracking-widest mb-2 font-mono">
-            <span className="text-zinc-500">Progreso Total</span>
-            <span className="text-cyan-400">{progressPercent}%</span>
+
+      {/* Hero Header */}
+      <header className="mb-12 border-b border-zinc-900 pb-10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+          <div className="space-y-4">
+            <h1 className="text-3xl md:text-5xl font-light tracking-[0.3em] uppercase">
+              BIBLIOTECA <span className="text-cyan-400 font-extrabold drop-shadow-[0_0_15px_rgba(34,211,238,0.4)]">VIRTUS</span>
+            </h1>
+            <p className="text-zinc-500 text-[10px] md:text-xs tracking-[0.4em] uppercase">
+              Protocolo de Entrenamiento y Salud Holística v2.0
+            </p>
           </div>
-          <div className="h-1 bg-zinc-900 overflow-hidden">
-            <div 
-              className="h-full bg-cyan-500 shadow-[0_0_10px_rgba(34,211,238,0.5)] transition-all duration-1000"
-              style={{ width: `${progressPercent}%` }}
-            />
+          
+          <div className="w-full md:w-80 bg-zinc-950/50 border border-zinc-900 p-6 shadow-2xl relative overflow-hidden group">
+            <div className="flex justify-between text-[10px] uppercase tracking-[0.2em] mb-3 font-mono">
+              <span className="text-zinc-500">Progreso Operativo</span>
+              <span className="text-cyan-400 font-bold">{progressPercent}%</span>
+            </div>
+            <div className="h-1 bg-zinc-900 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-cyan-500 shadow-[0_0_15px_#22d3ee] transition-all duration-[2000ms] ease-out"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            <div className="absolute top-0 right-0 w-12 h-12 bg-cyan-500/5 rounded-bl-full group-hover:bg-cyan-500/10 transition-colors" />
           </div>
         </div>
       </header>
 
-      {/* Grid de Secciones */}
-      <div className="flex flex-col gap-16">
+      {/* Secciones de Contenido */}
+      <div className="space-y-24 pb-20">
         
+        {/* Mindfulness - NUEVA SECCIÓN PRIORITARIA */}
+        <VideoSection 
+          title="Mindfulness & Foco" 
+          description="Gestión del estrés, meditación y consciencia plena." 
+          videos={mindfulnessVideos} 
+        />
+
         {/* Nutrición */}
-        <section>
-          <div className="flex items-center gap-4 mb-8">
-            <h2 className="text-lg font-bold tracking-widest uppercase text-cyan-400">Nutrición & Pautas</h2>
-            <div className="flex-1 h-[1px] bg-gradient-to-r from-zinc-800 to-transparent" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {nutritionVideos.length === 0 ? (
-              <p className="text-zinc-700 italic text-sm font-mono">[ No hay contenidos disponibles ]</p>
-            ) : (
-              nutritionVideos.map((video: any) => (
-                <VideoCard key={video.id} video={video} />
-              ))
-            )}
-          </div>
-        </section>
+        <VideoSection 
+          title="Nutrición Inteligente" 
+          description="Estrategias nutricionales y protocolos de suplementación." 
+          videos={nutritionVideos} 
+        />
 
         {/* Entrenamiento */}
-        <section>
-          <div className="flex items-center gap-4 mb-8">
-            <h2 className="text-lg font-bold tracking-widest uppercase text-cyan-400">Entrenamiento & Biomecánica</h2>
-            <div className="flex-1 h-[1px] bg-gradient-to-r from-zinc-800 to-transparent" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {fitnessVideos.length === 0 ? (
-              <p className="text-zinc-700 italic text-sm font-mono">[ No hay contenidos disponibles ]</p>
-            ) : (
-              fitnessVideos.map((video: any) => (
-                <VideoCard key={video.id} video={video} />
-              ))
-            )}
-          </div>
-        </section>
+        <VideoSection 
+          title="Fuerza & Biomecánica" 
+          description="Perfeccionamiento técnico y rutinas de alto rendimiento." 
+          videos={fitnessVideos} 
+        />
 
       </div>
     </div>
+  );
+}
+
+function VideoSection({ title, description, videos }: { title: string, description: string, videos: any[] }) {
+  return (
+    <section className="relative">
+      <div className="flex flex-col md:flex-row md:items-center gap-4 mb-10 border-l-2 border-cyan-500 pl-6">
+        <div>
+          <h2 className="text-xl font-bold tracking-[0.2em] uppercase text-white">{title}</h2>
+          <p className="text-[10px] text-zinc-600 tracking-widest uppercase mt-1">{description}</p>
+        </div>
+        <div className="hidden md:block flex-1 h-[1px] bg-gradient-to-r from-zinc-900 to-transparent" />
+      </div>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        {videos.length === 0 ? (
+          <div className="col-span-full py-12 border border-dashed border-zinc-900 flex items-center justify-center">
+             <p className="text-zinc-700 italic text-xs font-mono uppercase tracking-widest">[ No hay módulos activos en esta categoría ]</p>
+          </div>
+        ) : (
+          videos.map((video: any) => (
+            <VideoCard key={video.id} video={video} />
+          ))
+        )}
+      </div>
+    </section>
   );
 }
 

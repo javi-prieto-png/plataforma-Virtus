@@ -10,10 +10,10 @@ export default async function UsuariosAdminPage() {
       <div className="mb-10 flex justify-between items-end border-b border-zinc-900 pb-4">
         <div>
           <h2 className="text-2xl font-light tracking-widest uppercase text-white">
-            Control de <span className="text-cyan-400 font-bold">Alumnos</span>
+            Gestión de <span className="text-cyan-400 font-bold">Operadores</span>
           </h2>
-          <p className="text-zinc-500 text-xs tracking-widest uppercase mt-2">
-            Protocolo de Inserción y Revocación de Credenciales.
+          <p className="text-zinc-500 text-[10px] tracking-[0.4em] uppercase mt-2">
+            Protocolo VIRTUS de Inserción y Revocación de Credenciales.
           </p>
         </div>
         <div className="text-right">

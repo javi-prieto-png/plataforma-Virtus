@@ -1,7 +1,7 @@
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
 
-const secretKey = process.env.JWT_SECRET || "antigravity_super_secret_key_123";
+const secretKey = process.env.JWT_SECRET || "virtus_core_secure_vault_key_999";
 const encodedKey = new TextEncoder().encode(secretKey);
 
 export type SessionPayload = {

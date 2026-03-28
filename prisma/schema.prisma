@@ -20,6 +20,8 @@ model User {
   hasAcceptedLegal  Boolean       @default(false)
   interactions      Interaction[]
   feedbacks         Feedback[]
+  sentMessages      Message[]     @relation("SentMessages")
+  receivedMessages  Message[]     @relation("ReceivedMessages")
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 }
@@ -28,10 +30,20 @@ model Video {
   id           String        @id @default(uuid())
   title        String
   youtubeLink  String
-  category     String        // "NUTRITION" o "FITNESS"
+  category     String        // "NUTRITION", "FITNESS" o "MINDFULNESS"
   uploadDate   DateTime      @default(now())
   interactions Interaction[]
   feedbacks    Feedback[]
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  content    String
+  senderId   String
+  receiverId String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
 }
 
 model Interaction {
