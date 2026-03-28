@@ -58,7 +58,7 @@ export async function sendMessageAction(formData: FormData) {
       receiverId = admin.id;
     }
 
-    const newMessage = await prisma.message.create({
+    const newMessage = await (prisma.message as any).create({
       data: {
         content,
         senderId: session.userId,
@@ -111,7 +111,19 @@ export async function getConversationAction(otherUserId?: string, videoId?: stri
 
     if (!targetId) return { error: "Interlocutor no definido." };
 
-    const messages = await prisma.message.findMany({
+    if (session.userId === targetId || session.role === "ADMIN") {
+      await (prisma.message as any).updateMany({
+        where: {
+          senderId: targetId,
+          receiverId: session.userId,
+          videoId: videoId || null,
+          isRead: false
+        },
+        data: { isRead: true }
+      });
+    }
+
+    const messages = await (prisma.message as any).findMany({
       where: {
         AND: [
           {
@@ -147,7 +159,7 @@ export async function getAdminInboxAction() {
 
     // Buscamos todos los mensajes donde el receptor o emisor es el admin
     // pero agrupamos lógicamente por (studentId, videoId)
-    const messages = await prisma.message.findMany({
+    const messages = await (prisma.message as any).findMany({
       orderBy: { createdAt: "desc" },
       include: {
         sender: { select: { id: true, name: true, role: true } },
@@ -193,7 +205,7 @@ export async function getStudentInboxAction() {
     const session = await getSession();
     if (!session || session.role !== "STUDENT") return { error: "No autorizado." };
 
-    const messages = await prisma.message.findMany({
+    const messages = await (prisma.message as any).findMany({
       where: {
         OR: [
           { senderId: session.userId },

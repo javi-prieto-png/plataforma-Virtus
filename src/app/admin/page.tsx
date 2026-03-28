@@ -4,12 +4,17 @@ import Link from "next/link";
 export default async function AdminDashboardPage() {
   const usersCount = await prisma.user.count({ where: { role: "STUDENT" } });
   const videosCount = await prisma.video.count();
-  const feedbackCount = await prisma.feedback.count({ where: { isResolved: false } });
-
+  const unreadCount = await (prisma.message as any).count({ 
+    where: { 
+      isRead: false, 
+      receiver: { role: "ADMIN" } 
+    } 
+  });
+  
   const stats = [
     { label: "Alumnos Activos", value: usersCount, href: "/admin/usuarios", color: "text-cyan-400" },
     { label: "Contenido VOD", value: videosCount, href: "/admin/vod", color: "text-white" },
-    { label: "Dudas Pendientes", value: feedbackCount, href: "/admin/inbox", color: "text-red-400" },
+    { label: "Dudas Pendientes", value: unreadCount, href: "/admin/chat", color: "text-red-400" },
   ];
 
   return (
