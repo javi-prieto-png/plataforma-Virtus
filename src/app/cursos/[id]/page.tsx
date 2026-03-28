@@ -4,8 +4,9 @@ import YouTubePlayer from "./YouTubePlayer";
 import FeedbackSystem from "./FeedbackSystem";
 import Link from "next/link";
 
-export default async function VideoDetailPage({ params }: { params: { id: string } }) {
-  const video = await getStudentVideo(params.id);
+export default async function VideoDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const video = await getStudentVideo(id);
 
   if (!video) return notFound();
 
@@ -33,7 +34,7 @@ export default async function VideoDetailPage({ params }: { params: { id: string
         <header className="mb-10">
           <div className="flex items-center gap-3 mb-4">
             <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono border border-zinc-800 px-2 py-0.5">
-              {video.categoryId}
+              {video.category?.name}
             </span>
             {interaction?.isWatched && (
               <span className="text-[10px] text-cyan-400 uppercase tracking-widest font-bold bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5">

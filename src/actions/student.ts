@@ -130,6 +130,7 @@ export async function getStudentVideo(videoId: string) {
     const video = await prisma.video.findUnique({
       where: { id: videoId },
       include: {
+        category: true,
         interactions: {
           where: { userId: session.id }
         }
