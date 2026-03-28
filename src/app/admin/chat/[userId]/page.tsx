@@ -61,7 +61,7 @@ export default function AdminConversationPage() {
           <div className="h-4 w-px bg-zinc-800 mx-2" />
           <div>
             <h2 className="text-sm font-bold tracking-widest uppercase text-white">Chat con Estudiante</h2>
-            <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-1">Soporte Directo VIRTUS_ID: {userId.slice(0,8)}</p>
+            <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-1">Soporte Directo VIRTUS_ID: {userId?.slice(0,8)}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
