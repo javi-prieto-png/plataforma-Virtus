@@ -60,7 +60,28 @@ async function main() {
 
   console.log(`✅ Creado STUDENT: ${student2.email} / student123 (Onboarding Superado)`);
 
-  // 4. Crear Contenidos VOD de ejemplo
+  // 4. Crear Categorías base
+  const catFitness = await prisma.category.upsert({
+    where: { name: "FITNESS" },
+    update: {},
+    create: { name: "FITNESS" }
+  });
+
+  const catNutrition = await prisma.category.upsert({
+    where: { name: "NUTRITION" },
+    update: {},
+    create: { name: "NUTRITION" }
+  });
+
+  const catMindfulness = await prisma.category.upsert({
+    where: { name: "MINDFULNESS" },
+    update: {},
+    create: { name: "MINDFULNESS" }
+  });
+
+  console.log(`✅ Categorías base inyectadas.`);
+
+  // 5. Crear Contenidos VOD de ejemplo
   const video1 = await prisma.video.upsert({
     where: { id: "seed-vid-1" },
     update: {},
@@ -68,7 +89,7 @@ async function main() {
       id: "seed-vid-1",
       title: "Biomecánica del Peso Muerto",
       youtubeLink: "https://www.youtube.com/watch?v=op9kVnSso6Q",
-      category: "FITNESS"
+      categoryId: catFitness.id
     }
   });
 
@@ -79,13 +100,13 @@ async function main() {
       id: "seed-vid-2",
       title: "Pautas Nutricionales: Déficit Calórico",
       youtubeLink: "https://www.youtube.com/watch?v=0_u_SUnPezE",
-      category: "NUTRITION"
+      categoryId: catNutrition.id
     }
   });
 
   console.log(`✅ Videos de prueba inyectados.`);
 
-  // 5. Crear Feedbacks de prueba
+  // 6. Crear Feedbacks de prueba
   await prisma.feedback.createMany({
     data: [
       {

@@ -1,9 +1,12 @@
-import { getVideos } from "@/actions/admin";
+import { getVideos, getCategories } from "@/actions/admin";
 import CreateVideoForm from "./CreateVideoForm";
 import DeleteVideoButton from "./DeleteVideoButton";
 
 export default async function AdminVODPage() {
-  const videos = await getVideos();
+  const [videos, categories] = await Promise.all([
+    getVideos(),
+    getCategories()
+  ]);
 
   return (
     <div className="w-full">
@@ -13,7 +16,7 @@ export default async function AdminVODPage() {
             Biblioteca <span className="text-cyan-400 font-bold">VOD</span>
           </h2>
           <p className="text-zinc-500 text-xs tracking-widest uppercase mt-2">
-            Gestor de Enlaces YouTube. Nutrición & Fitness.
+            Gestor de Enlaces YouTube. Nutricion & Fitness.
           </p>
         </div>
         <div className="text-right">
@@ -28,7 +31,7 @@ export default async function AdminVODPage() {
           <h3 className="text-sm font-bold tracking-widest uppercase text-cyan-400 mb-6 border-b border-zinc-900 pb-2">
             Inyectar Contenido
           </h3>
-          <CreateVideoForm />
+          <CreateVideoForm categories={categories} />
         </aside>
 
         {/* Tabla Central: Lista de Videos */}
@@ -37,9 +40,9 @@ export default async function AdminVODPage() {
             <thead className="text-xs uppercase bg-black text-cyan-500 border-b border-zinc-900 tracking-widest">
               <tr>
                 <th className="px-4 py-3 font-medium">Contenido VIRTUS</th>
-                <th className="px-4 py-3 font-medium">Categoría</th>
+                <th className="px-4 py-3 font-medium">Categor\u00eda</th>
                 <th className="px-4 py-3 font-medium">Fecha</th>
-                <th className="px-4 py-3 font-medium text-right">Acción</th>
+                <th className="px-4 py-3 font-medium text-right">Acci\u00f3n</th>
               </tr>
             </thead>
             <tbody>
@@ -60,7 +63,7 @@ export default async function AdminVODPage() {
                     </td>
                     <td className="px-4 py-4">
                       <span className="px-2 py-1 bg-zinc-900 text-zinc-300 border border-zinc-800 text-[10px] uppercase font-mono tracking-widest">
-                        {vid.category === "NUTRITION" ? "Nutrición" : vid.category === "FITNESS" ? "Fitness" : "Mindfulness"}
+                        {vid.category?.name || "Sin Categor\u00eda"}
                       </span>
                     </td>
                     <td className="px-4 py-4 text-xs font-mono text-zinc-600">

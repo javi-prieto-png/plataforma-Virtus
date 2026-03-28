@@ -8,15 +8,14 @@ import prisma from "@/lib/prisma";
 export default async function CursosPage() {
   const videos = await getStudentVideos();
   const session = await getSession();
+  const categories = await prisma.category.findMany({
+    orderBy: { name: "asc" }
+  });
   
   const user = await prisma.user.findUnique({
-    where: { id: session?.id },
+    where: { id: session?.userId },
     select: { hasAcceptedLegal: true, name: true }
   });
-
-  const nutritionVideos = videos.filter((v: any) => v.category === "NUTRITION");
-  const fitnessVideos = videos.filter((v: any) => v.category === "FITNESS");
-  const mindfulnessVideos = videos.filter((v: any) => v.category === "MINDFULNESS");
 
   const watchedCount = videos.filter((v: any) => v.interactions[0]?.isWatched).length;
   const progressPercent = videos.length > 0 ? Math.round((watchedCount / videos.length) * 100) : 0;
@@ -33,7 +32,7 @@ export default async function CursosPage() {
               BIBLIOTECA <span className="text-cyan-400 font-extrabold drop-shadow-[0_0_15px_rgba(34,211,238,0.4)]">VIRTUS</span>
             </h1>
             <p className="text-zinc-500 text-[10px] md:text-xs tracking-[0.4em] uppercase">
-              Protocolo de Entrenamiento y Salud Holística v2.0
+              Protocolo de Entrenamiento y Salud Hol\u00edstica v2.0
             </p>
           </div>
           
@@ -53,30 +52,28 @@ export default async function CursosPage() {
         </div>
       </header>
 
-      {/* Secciones de Contenido */}
+      {/* Secciones de Contenido Din\u00e1mico */}
       <div className="space-y-24 pb-20">
-        
-        {/* Mindfulness - NUEVA SECCIÓN PRIORITARIA */}
-        <VideoSection 
-          title="Mindfulness & Foco" 
-          description="Gestión del estrés, meditación y consciencia plena." 
-          videos={mindfulnessVideos} 
-        />
+        {categories.map((cat: any) => {
+          const catVideos = videos.filter((v: any) => v.categoryId === cat.id);
+          return (
+            <VideoSection 
+              key={cat.id}
+              title={cat.name} 
+              description={`M\u00f3dulos de acceso nivel ${cat.name.length % 3 + 1}`} 
+              videos={catVideos} 
+            />
+          );
+        })}
 
-        {/* Nutrición */}
-        <VideoSection 
-          title="Nutrición Inteligente" 
-          description="Estrategias nutricionales y protocolos de suplementación." 
-          videos={nutritionVideos} 
-        />
-
-        {/* Entrenamiento */}
-        <VideoSection 
-          title="Fuerza & Biomecánica" 
-          description="Perfeccionamiento técnico y rutinas de alto rendimiento." 
-          videos={fitnessVideos} 
-        />
-
+        {/* Fallback para videos sin categor\u00eda (si existieran) */}
+        {videos.some((v:any) => !v.categoryId) && (
+          <VideoSection 
+            title="Otros Contenidos" 
+            description="M\u00f3dulos pendientes de clasificaci\u00f3n." 
+            videos={videos.filter((v: any) => !v.categoryId)} 
+          />
+        )}
       </div>
     </div>
   );
@@ -149,7 +146,7 @@ function VideoCard({ video }: { video: any }) {
           {video.title}
         </h3>
         <div className="mt-3 flex justify-between items-center text-[9px] font-mono uppercase tracking-[0.2em] text-zinc-600">
-          <span>{video.category}</span>
+          <span>{video.category?.name}</span>
           <span className="text-cyan-700 underline group-hover:text-cyan-400 transition-colors">ACCEDER_MÓDULO</span>
         </div>
       </div>

@@ -1,12 +1,16 @@
 "use client";
 
 import { useTransition, useState } from "react";
-import { createAdminAction } from "@/actions/admin";
+import { createAdminAction, createCategoryAction } from "@/actions/admin";
 
 export default function AdminConfigPage() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+
+  const [catPending, startCatTransition] = useTransition();
+  const [catError, setCatError] = useState<string | null>(null);
+  const [catSuccess, setCatSuccess] = useState<boolean>(false);
 
   async function handleAddAdmin(formData: FormData) {
     setError(null);
@@ -18,6 +22,20 @@ export default function AdminConfigPage() {
       } else {
         setSuccess(true);
         (document.getElementById("add-admin-form") as HTMLFormElement)?.reset();
+      }
+    });
+  }
+
+  async function handleAddCategory(formData: FormData) {
+    setCatError(null);
+    setCatSuccess(false);
+    startCatTransition(async () => {
+      const res = await createCategoryAction(formData);
+      if (res.error) {
+        setCatError(res.error);
+      } else {
+        setCatSuccess(true);
+        (document.getElementById("add-category-form") as HTMLFormElement)?.reset();
       }
     });
   }
@@ -69,24 +87,31 @@ export default function AdminConfigPage() {
            </form>
         </section>
 
-        {/* Sección: Resumen de Organización */}
+        {/* Sección: Gestión de Categorías */}
         <section className="space-y-8">
-           <div className="bg-zinc-950 border border-zinc-900 p-8">
-              <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-[0.2em] mb-6">Categorías de Contenido Activas</h3>
-              <div className="space-y-4">
-                 <div className="flex justify-between items-center p-4 bg-zinc-900/50 border border-zinc-800">
-                    <span className="text-[10px] text-white uppercase tracking-widest">Nutrición & Suplementación</span>
-                    <span className="text-[9px] text-zinc-600 font-mono">CODE: NUTRITION</span>
-                 </div>
-                 <div className="flex justify-between items-center p-4 bg-zinc-900/50 border border-zinc-800">
-                    <span className="text-[10px] text-white uppercase tracking-widest">Entrenamiento & Fuerza</span>
-                    <span className="text-[9px] text-zinc-600 font-mono">CODE: FITNESS</span>
-                 </div>
-                 <div className="flex justify-between items-center p-4 bg-zinc-900/50 border border-zinc-800">
-                    <span className="text-[10px] text-cyan-400 uppercase tracking-widest">Mindfulness & Foco</span>
-                    <span className="text-[9px] text-zinc-600 font-mono">CODE: MINDFULNESS</span>
-                 </div>
-              </div>
+           <div className="bg-zinc-950 border border-zinc-900 p-8 shadow-2xl relative">
+              <h3 className="text-sm font-bold text-cyan-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
+                 <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full" />
+                 Escalabilidad de Contenido
+              </h3>
+              
+              <form id="add-category-form" action={handleAddCategory} className="space-y-6">
+                {catError && <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-500 text-[10px] font-mono uppercase">[ERROR]: {catError}</div>}
+                {catSuccess && <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] font-mono uppercase text-center">[SECCIÓN_INJECTADA]</div>}
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-[9px] text-zinc-500 uppercase tracking-widest font-bold">Nombre de Nueva Sección</label>
+                  <input name="name" type="text" required placeholder="EJ: BIOHACKING" className="bg-black border border-zinc-900 p-3 text-sm text-white focus:border-cyan-500 focus:outline-none transition-colors uppercase tracking-widest" />
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={catPending}
+                  className="w-full py-4 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-cyan-500 hover:text-black transition-all disabled:opacity-50"
+                >
+                  {catPending ? "SINCRONIZANDO..." : "Añadir Nueva Categoría"}
+                </button>
+              </form>
            </div>
 
            <div className="p-8 border border-zinc-900/50 bg-zinc-950/20">

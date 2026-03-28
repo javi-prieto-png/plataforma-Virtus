@@ -108,11 +108,10 @@ export async function createVideoAction(formData: FormData) {
   try {
     const title = formData.get("title") as string;
     const youtubeLink = formData.get("youtubeLink") as string;
-    const category = formData.get("category") as string;
+    const categoryId = formData.get("categoryId") as string;
     const uploadDateStr = formData.get("uploadDate") as string;
 
-    if (!title || !youtubeLink || !category) return { error: "Todos los campos obligatorios." };
-    if (!["NUTRITION", "FITNESS", "MINDFULNESS"].includes(category)) return { error: "Categoría inválida." };
+    if (!title || !youtubeLink || !categoryId) return { error: "Todos los campos obligatorios." };
 
     const uploadDate = uploadDateStr ? new Date(uploadDateStr) : new Date();
 
@@ -120,7 +119,7 @@ export async function createVideoAction(formData: FormData) {
       data: { 
         title, 
         youtubeLink, 
-        category,
+        categoryId,
         uploadDate
       }
     });
@@ -129,7 +128,26 @@ export async function createVideoAction(formData: FormData) {
     revalidatePath("/cursos");
     return { success: true };
   } catch (error) {
+    console.error("[CREATE-VIDEO-ERROR]:", error);
     return { error: "Error al publicar el vídeo." };
+  }
+}
+
+export async function createCategoryAction(formData: FormData) {
+  try {
+    const name = formData.get("name") as string;
+    if (!name) return { error: "El nombre de la categoría es obligatorio." };
+
+    await prisma.category.create({
+      data: { name: name.toUpperCase() }
+    });
+
+    revalidatePath("/admin/configuracion");
+    revalidatePath("/admin/vod");
+    return { success: true };
+  } catch (error) {
+    if ((error as any).code === 'P2002') return { error: "La categoría ya existe." };
+    return { error: "Error al crear la categoría." };
   }
 }
 
@@ -157,7 +175,14 @@ export async function getStudents() {
 
 export async function getVideos() {
   return await prisma.video.findMany({
+    include: { category: true },
     orderBy: { uploadDate: "desc" }
+  });
+}
+
+export async function getCategories() {
+  return await prisma.category.findMany({
+    orderBy: { name: "asc" }
   });
 }
 

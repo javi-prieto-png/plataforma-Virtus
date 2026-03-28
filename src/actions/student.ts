@@ -105,6 +105,7 @@ export async function getStudentVideos() {
     const videos = await prisma.video.findMany({
       orderBy: { uploadDate: "desc" },
       include: {
+        category: true,
         interactions: {
           where: { userId: session.id }
         }

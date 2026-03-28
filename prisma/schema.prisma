@@ -30,10 +30,17 @@ model Video {
   id           String        @id @default(uuid())
   title        String
   youtubeLink  String
-  category     String        // "NUTRITION", "FITNESS" o "MINDFULNESS"
+  categoryId   String
+  category     Category      @relation(fields: [categoryId], references: [id])
   uploadDate   DateTime      @default(now())
   interactions Interaction[]
   feedbacks    Feedback[]
+}
+
+model Category {
+  id     String  @id @default(uuid())
+  name   String  @unique
+  videos Video[]
 }
 
 model Message {
