@@ -2,11 +2,14 @@
 
 import { useEffect, useState, useTransition, useRef } from "react";
 import { sendMessageAction, getConversationAction } from "@/actions/chat";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 export default function AdminConversationPage() {
   const { userId } = useParams();
+  const searchParams = useSearchParams();
+  const videoId = searchParams.get("video") || null;
+
   const [messages, setMessages] = useState<any[]>([]);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -14,13 +17,13 @@ export default function AdminConversationPage() {
 
   useEffect(() => {
     async function load() {
-      const res = await getConversationAction(userId as string);
+      const res = await getConversationAction(userId as string, videoId as string);
       if (res.messages) setMessages(res.messages);
     }
     load();
     const interval = setInterval(load, 5000); 
     return () => clearInterval(interval);
-  }, [userId]);
+  }, [userId, videoId]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -34,17 +37,18 @@ export default function AdminConversationPage() {
     if (!content.trim()) return;
 
     startTransition(async () => {
-      // Forzamos el receiverId para que sea el estudiante actual
       if (!userId) {
-        setError("Error: Identificador de usuario no válido.");
+        setError("Error: Identificador de usuario no v\u00e1lido.");
         return;
       }
       formData.set("receiverId", userId as string);
+      if (videoId) formData.set("videoId", videoId);
+      
       const res = await sendMessageAction(formData);
       if (res.error) {
         setError(res.error);
       } else {
-        const update = await getConversationAction(userId as string);
+        const update = await getConversationAction(userId as string, videoId as string);
         if (update.messages) setMessages(update.messages);
       }
     });
@@ -60,7 +64,9 @@ export default function AdminConversationPage() {
           </Link>
           <div className="h-4 w-px bg-zinc-800 mx-2" />
           <div>
-            <h2 className="text-sm font-bold tracking-widest uppercase text-white">Chat con Estudiante</h2>
+            <h2 className="text-sm font-bold tracking-widest uppercase text-white">
+              {messages[0]?.video?.title ? `Consulta: ${messages[0].video.title}` : 'Chat con Estudiante'}
+            </h2>
             <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-1">Soporte Directo VIRTUS_ID: {userId?.slice(0,8)}</p>
           </div>
         </div>

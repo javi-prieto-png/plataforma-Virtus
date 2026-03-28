@@ -29,7 +29,7 @@ export default async function DashboardLayout({
           <p className="text-[10px] text-zinc-500 tracking-widest uppercase font-bold">Navegación</p>
           <Link href="/dashboard" className="text-xs tracking-widest uppercase text-zinc-400 hover:text-cyan-400 hover:translate-x-1 transition-all active:text-cyan-400">❯ Inicio</Link>
           <Link href="/cursos" className="text-xs tracking-widest uppercase text-zinc-400 hover:text-cyan-400 hover:translate-x-1 transition-all">❯ Biblioteca de Videos</Link>
-          <Link href="/dashboard/chat" className="text-xs tracking-widest uppercase text-zinc-400 hover:text-cyan-400 hover:translate-x-1 transition-all">❯ Buzón (Chat)</Link>
+          <Link href="/dashboard/chat/inbox" className="text-xs tracking-widest uppercase text-zinc-400 hover:text-cyan-400 hover:translate-x-1 transition-all">❯ Buz\u00f3n (Chat)</Link>
         </div>
 
         <div className="flex flex-col space-y-4 pt-4 border-t border-zinc-900">

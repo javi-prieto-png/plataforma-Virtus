@@ -3,6 +3,7 @@
 import { useState, ReactNode, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
+import AdminDropdown from "@/components/admin/AdminDropdown";
 
 interface SidebarManagerProps {
   sidebarContent: ReactNode;
@@ -23,9 +24,13 @@ export default function SidebarManager({ sidebarContent, children, isAdmin }: Si
     <div className="flex min-h-screen bg-black text-white relative">
       {/* MOBILE HEADER */}
       <header className="lg:hidden fixed top-0 left-0 w-full h-16 bg-black border-b border-zinc-900 z-[60] flex items-center justify-between px-6">
-        <h1 className="text-sm font-bold tracking-widest uppercase">
-          VIRTUS<span className={isAdmin ? "text-amber-500" : "text-cyan-400"}>{isAdmin ? "_ADMIN" : "."}</span>
-        </h1>
+        {isAdmin ? (
+          <AdminDropdown isMobile />
+        ) : (
+          <h1 className="text-sm font-bold tracking-widest uppercase mb-0">
+            VIRTUS<span className="text-cyan-400">.</span>
+          </h1>
+        )}
         <button 
           onClick={() => setIsOpen(!isOpen)}
           className="p-2 border border-zinc-800 text-zinc-400 hover:text-white transition-colors"

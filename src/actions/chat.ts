@@ -31,7 +31,7 @@ function filterContent(content: string): string {
 
 /**
  * Acción para enviar un mensaje en el Buzón.
- * Vincula el mensaje al ID del usuario y dispara notificaciones.
+ * Vincula el mensaje al ID del usuario, opcionalmente a un vídeo, y dispara notificaciones.
  */
 export async function sendMessageAction(formData: FormData) {
   try {
@@ -40,6 +40,7 @@ export async function sendMessageAction(formData: FormData) {
 
     const contentInput = formData.get("content") as string;
     const receiverIdInput = formData.get("receiverId") as string;
+    const videoId = formData.get("videoId") as string || null;
 
     if (!contentInput || contentInput.trim() === "") {
       return { error: "El mensaje no puede estar vacío." };
@@ -62,6 +63,7 @@ export async function sendMessageAction(formData: FormData) {
         content,
         senderId: session.userId,
         receiverId: receiverId,
+        videoId: videoId,
       },
       include: {
         sender: { select: { name: true, email: true } },
@@ -70,7 +72,6 @@ export async function sendMessageAction(formData: FormData) {
     });
 
     // 📧 Sistema de Alertas por Correo
-    // Notificar al receptor sobre el nuevo mensaje
     await sendMail({
       to: newMessage.receiver.email,
       subject: `Nuevo mensaje en VIRTUS de ${newMessage.sender.name}`,
@@ -79,6 +80,8 @@ export async function sendMessageAction(formData: FormData) {
     });
 
     revalidatePath("/dashboard/chat");
+    revalidatePath("/dashboard/chat/inbox");
+    revalidatePath(`/admin/chat`);
     revalidatePath(`/admin/chat/${receiverId}`);
     revalidatePath(`/admin/chat/${session.userId}`);
     
@@ -90,9 +93,10 @@ export async function sendMessageAction(formData: FormData) {
 }
 
 /**
- * Recupera el historial de chat entre el usuario actual y su contraparte.
+ * Recupera el historial de chat entre el usuario actual y su contraparte,
+ * filtrado opcionalmente por un vídeo específico.
  */
-export async function getConversationAction(otherUserId?: string) {
+export async function getConversationAction(otherUserId?: string, videoId?: string) {
   try {
     const session = await getSession();
     if (!session) return { error: "No autorizado." };
@@ -109,14 +113,20 @@ export async function getConversationAction(otherUserId?: string) {
 
     const messages = await prisma.message.findMany({
       where: {
-        OR: [
-          { senderId: session.userId, receiverId: targetId },
-          { senderId: targetId, receiverId: session.userId },
+        AND: [
+          {
+            OR: [
+              { senderId: session.userId, receiverId: targetId },
+              { senderId: targetId, receiverId: session.userId },
+            ]
+          },
+          { videoId: videoId || null }
         ]
       },
       orderBy: { createdAt: "asc" },
       include: {
-        sender: { select: { name: true, role: true } }
+        sender: { select: { name: true, role: true } },
+        video: { select: { title: true } }
       }
     });
 
@@ -128,45 +138,91 @@ export async function getConversationAction(otherUserId?: string) {
 
 /**
  * Recupera la lista de conversaciones recientes para el Administrador.
- * Ordenada por el mensaje más reciente de cada usuario.
+ * Segmentado por Alumno y Vídeo.
  */
 export async function getAdminInboxAction() {
   try {
     const session = await getSession();
     if (!session || session.role !== "ADMIN") return { error: "No autorizado." };
 
-    // Agrupamos por estudiantes que han tenido interacción
-    const students = await prisma.user.findMany({
-      where: { role: "STUDENT" },
-      select: {
-        id: true,
-        name: true,
-        receivedMessages: {
-          orderBy: { createdAt: "desc" },
-          take: 1
-        },
-        sentMessages: {
-          orderBy: { createdAt: "desc" },
-          take: 1
-        }
+    // Buscamos todos los mensajes donde el receptor o emisor es el admin
+    // pero agrupamos lógicamente por (studentId, videoId)
+    const messages = await prisma.message.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        sender: { select: { id: true, name: true, role: true } },
+        receiver: { select: { id: true, name: true, role: true } },
+        video: { select: { id: true, title: true } }
       }
     });
 
-    // Filtramos solo los que tienen mensajes y ordenamos
-    const inbox = students
-      .map(s => {
-        const lastIn = s.sentMessages[0]?.createdAt || new Date(0);
-        const lastOut = s.receivedMessages[0]?.createdAt || new Date(0);
-        return {
-          ...s,
-          lastMessageAt: lastIn > lastOut ? lastIn : lastOut
-        };
-      })
-      .filter(s => s.lastMessageAt.getTime() > 0)
-      .sort((a, b) => b.lastMessageAt.getTime() - a.lastMessageAt.getTime());
+    const threadsMap = new Map();
 
-    return { inbox };
+    messages.forEach(msg => {
+      const student = msg.sender.role === "STUDENT" ? msg.sender : msg.receiver;
+      if (student.role !== "STUDENT") return;
+
+      const threadKey = `${student.id}-${msg.videoId || 'general'}`;
+      
+      if (!threadsMap.has(threadKey)) {
+        threadsMap.set(threadKey, {
+          id: student.id,
+          name: student.name,
+          videoId: msg.videoId,
+          videoTitle: msg.video?.title || "CONSULTA GENERAL",
+          lastMessage: msg.content,
+          lastMessageAt: msg.createdAt,
+          unread: false // Implementable con un campo 'read' en Message
+        });
+      }
+    });
+
+    return { inbox: Array.from(threadsMap.values()) };
   } catch (error) {
+    console.error("Error inbox:", error);
     return { error: "Error al cargar la bandeja de entrada." };
+  }
+}
+
+/**
+ * Recupera la bandeja de entrada personalizada para el Estudiante.
+ * Permite ver sus hilos abiertos por vídeo.
+ */
+export async function getStudentInboxAction() {
+  try {
+    const session = await getSession();
+    if (!session || session.role !== "STUDENT") return { error: "No autorizado." };
+
+    const messages = await prisma.message.findMany({
+      where: {
+        OR: [
+          { senderId: session.userId },
+          { receiverId: session.userId }
+        ]
+      },
+      orderBy: { createdAt: "desc" },
+      include: {
+        video: { select: { id: true, title: true } }
+      }
+    });
+
+    const threadsMap = new Map();
+
+    messages.forEach(msg => {
+      const threadKey = msg.videoId || 'general';
+      
+      if (!threadsMap.has(threadKey)) {
+        threadsMap.set(threadKey, {
+          videoId: msg.videoId,
+          videoTitle: msg.video?.title || "SOPORTE GENERAL",
+          lastMessage: msg.content,
+          lastMessageAt: msg.createdAt
+        });
+      }
+    });
+
+    return { inbox: Array.from(threadsMap.values()) };
+  } catch (error) {
+    return { error: "Error al cargar tu buzón." };
   }
 }

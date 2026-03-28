@@ -4,6 +4,7 @@ import { decrypt } from "@/lib/session";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import SidebarManager from "@/components/layout/SidebarManager";
+import AdminDropdown from "@/components/admin/AdminDropdown";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
@@ -15,9 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const sidebarContent = (
     <div className="flex flex-col p-8 h-full bg-black justify-between">
       <div>
-        <h1 className="text-xl font-bold mb-12 tracking-widest uppercase">
-          VIRTUS<span className="text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)] font-extrabold">_ADMIN</span>
-        </h1>
+        <AdminDropdown />
         <nav className="flex flex-col space-y-6">
           <Link href="/admin" className="text-xs tracking-widest uppercase text-zinc-500 hover:text-cyan-400 hover:translate-x-1 transition-all">DASHBOARD</Link>
           <Link href="/admin/usuarios" className="text-xs tracking-widest uppercase text-zinc-500 hover:text-cyan-400 hover:translate-x-1 transition-all">ALUMNOS</Link>

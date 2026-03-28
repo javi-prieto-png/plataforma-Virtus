@@ -2,23 +2,28 @@
 
 import { useEffect, useState, useTransition, useRef } from "react";
 import { sendMessageAction, getConversationAction } from "@/actions/chat";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 export default function StudentChatPage() {
+  const searchParams = useSearchParams();
+  const videoId = searchParams.get("video") || null;
+
   const [messages, setMessages] = useState<any[]>([]);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Carga inicial y polling (Simulación de tiempo real)
+  // Carga inicial y polling
   useEffect(() => {
     async function load() {
-      const res = await getConversationAction();
+      const res = await getConversationAction(undefined, videoId as string);
       if (res.messages) setMessages(res.messages);
     }
     load();
-    const interval = setInterval(load, 5000); // Polling cada 5 seg
+    const interval = setInterval(load, 5000); 
     return () => clearInterval(interval);
-  }, []);
+  }, [videoId]);
 
   // Auto-scroll al final
   useEffect(() => {
@@ -32,13 +37,16 @@ export default function StudentChatPage() {
     const content = formData.get("content") as string;
     if (!content.trim()) return;
 
+    if (videoId) {
+      formData.set("videoId", videoId);
+    }
+
     startTransition(async () => {
       const res = await sendMessageAction(formData);
       if (res.error) {
         setError(res.error);
       } else {
-        // Optimistic update o recarga inmediata
-        const update = await getConversationAction();
+        const update = await getConversationAction(undefined, videoId as string);
         if (update.messages) setMessages(update.messages);
       }
     });
@@ -47,14 +55,22 @@ export default function StudentChatPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-160px)] max-w-4xl mx-auto border border-zinc-900 bg-zinc-950 shadow-2xl overflow-hidden relative group">
       {/* Header Chat */}
-      <div className="p-4 border-b border-zinc-900 bg-black flex justify-between items-center">
-        <div>
-          <h2 className="text-sm font-bold tracking-widest uppercase text-white">Canal de Soporte VIRTUS</h2>
-          <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1">Conexión Directa con Administración</p>
+      <div className="p-4 border-b border-zinc-900 bg-black flex justify-between items-center px-6">
+        <div className="flex items-center gap-4">
+          <Link href="/dashboard/chat/inbox" className="text-zinc-600 hover:text-cyan-400 transition-colors uppercase text-[9px] tracking-widest font-bold">
+            ❮ Mi Buz\u00f3n
+          </Link>
+          <div className="h-4 w-px bg-zinc-800 mx-2" />
+          <div>
+            <h2 className="text-sm font-bold tracking-widest uppercase text-white">
+              {messages[0]?.video?.title ? `Duda: ${messages[0].video.title}` : 'Soporte VIRTUS'}
+            </h2>
+            <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-1">Comunicaci\u00f3n Encriptada</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
-          <span className="text-[9px] text-cyan-500 font-mono tracking-widest uppercase">Encriptado_AES</span>
+          <span className="text-[9px] text-cyan-400 font-mono tracking-widest uppercase">Live_Node</span>
         </div>
       </div>
 

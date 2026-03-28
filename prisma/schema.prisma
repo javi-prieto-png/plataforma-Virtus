@@ -35,6 +35,7 @@ model Video {
   uploadDate   DateTime      @default(now())
   interactions Interaction[]
   feedbacks    Feedback[]
+  messages     Message[]     // Relaci\u00f3n con hilos de chat
 }
 
 model Category {
@@ -48,6 +49,8 @@ model Message {
   content    String
   senderId   String
   receiverId String
+  videoId    String?  // ID del v\u00eddeo si es una consulta de v\u00eddeo
+  video      Video?   @relation(fields: [videoId], references: [id], onDelete: SetNull)
   sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
   receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())

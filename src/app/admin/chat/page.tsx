@@ -40,10 +40,10 @@ export default function AdminInboxPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
-          {inbox.map((item) => (
+          {inbox.map((item, idx) => (
             <Link 
-              key={item.id} 
-              href={`/admin/chat/${item.id}`}
+              key={`${item.id}-${idx}`} 
+              href={`/admin/chat/${item.id}${item.videoId ? `?video=${item.videoId}` : ''}`}
               className="group flex flex-col md:flex-row md:items-center justify-between p-6 bg-zinc-950 border border-zinc-900 hover:border-cyan-500/50 transition-all relative overflow-hidden"
             >
               <div className="flex items-center gap-4 relative z-10">
@@ -51,17 +51,26 @@ export default function AdminInboxPage() {
                   {item.name[0]}
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider group-hover:text-cyan-400 transition-colors">{item.name}</h3>
-                  <p className="text-[10px] text-zinc-600 uppercase tracking-widest mt-1">
-                    Última interacción: {new Date(item.lastMessageAt).toLocaleString()}
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider group-hover:text-cyan-400 transition-colors">{item.name}</h3>
+                    {item.videoId && (
+                      <span className="text-[8px] bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 px-1.5 py-0.5 font-bold tracking-tighter uppercase">
+                        V\u00cdDEO: {item.videoTitle.slice(0, 20)}{item.videoTitle.length > 20 ? '...' : ''}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-zinc-400 font-mono mt-1 line-clamp-1 max-w-md italic">
+                    "{item.lastMessage.slice(0, 60)}{item.lastMessage.length > 60 ? '...' : ''}"
+                  </p>
+                  <p className="text-[9px] text-zinc-600 uppercase tracking-widest mt-1">
+                    {new Date(item.lastMessageAt).toLocaleString()}
                   </p>
                 </div>
               </div>
 
               <div className="mt-4 md:mt-0 flex items-center gap-4 relative z-10">
-                <span className="text-[10px] text-zinc-500 font-mono tracking-tighter uppercase">ID: {item.id.slice(0,8)}</span>
                 <div className="px-4 py-1 border border-cyan-500/20 text-[9px] text-cyan-400 uppercase tracking-widest font-bold bg-cyan-500/5 group-hover:bg-cyan-500/10 transition-colors">
-                  Abrir Chat
+                  Responder Hilo
                 </div>
               </div>
 
