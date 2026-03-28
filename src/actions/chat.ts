@@ -164,15 +164,10 @@ export async function getAdminInboxAction() {
     const session = await getSession();
     if (!session || session.role !== "ADMIN") return { error: "No autorizado." };
 
-    // Buscamos todos los mensajes que involucren a un estudiante
+    // Fetch global para evitar fallos de relación en Prisma con tipos stale
     const messages = await (prisma.message as any).findMany({
-      where: {
-        OR: [
-          { sender: { role: "STUDENT" } },
-          { receiver: { role: "STUDENT" } }
-        ]
-      },
       orderBy: { createdAt: "desc" },
+      take: 200, // Tomamos suficiente histórico para cubrir todos los hilos activos
       include: {
         sender: { select: { id: true, name: true, role: true, email: true } },
         receiver: { select: { id: true, name: true, role: true, email: true } },
@@ -183,10 +178,17 @@ export async function getAdminInboxAction() {
     const threadsMap = new Map();
 
     messages.forEach(msg => {
-      const isFromStudent = msg.sender.role === "STUDENT";
-      const student = isFromStudent ? msg.sender : msg.receiver;
-      const threadKey = `${student.id}-${msg.videoId || 'general'}`;
+      // Identificar al estudiante involucrado
+      let student = null;
+      if (msg.sender && msg.sender.role === "STUDENT") {
+        student = msg.sender;
+      } else if (msg.receiver && msg.receiver.role === "STUDENT") {
+        student = msg.receiver;
+      }
+
+      if (!student) return; // Saltar mensajes que no involucren a un estudiante
       
+      const threadKey = `${student.id}-${msg.videoId || 'general'}`;
       const existingThread = threadsMap.get(threadKey);
       
       if (!existingThread) {
@@ -201,7 +203,7 @@ export async function getAdminInboxAction() {
           unreadCount: (msg.receiver.role === "ADMIN" && !msg.isRead) ? 1 : 0
         });
       } else {
-        // Si el mensaje es para un admin y no est\u00e1 le\u00eddo, sumamos al contador del hilo
+        // Si el mensaje es para un admin y no está leído, sumamos al contador del hilo
         if (msg.receiver.role === "ADMIN" && !msg.isRead) {
           existingThread.unreadCount += 1;
         }
