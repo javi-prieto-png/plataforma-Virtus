@@ -2,6 +2,7 @@
 
 import { useTransition, useState } from "react";
 import { submitVideoFeedbackAction } from "@/actions/student";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
 
 interface FeedbackSystemProps {
   videoId: string;
@@ -38,7 +39,7 @@ export default function FeedbackSystem({ videoId, initialStatus }: FeedbackSyste
     startTransition(async () => {
       const result = await submitVideoFeedbackAction(formData);
       if (result.success) {
-        setStatusMsg("CONSULTA RECIBIDA. TE RESPONDEREMOS PRONTO.");
+        setStatusMsg("CONSULTA RECIBIDA. COORDINA EN EL BUZÓN GLOBAL.");
         (document.getElementById("feedback-form") as HTMLFormElement)?.reset();
         setShowDislikeMotivo(false);
       }
@@ -51,23 +52,25 @@ export default function FeedbackSystem({ videoId, initialStatus }: FeedbackSyste
       <div className="flex items-center gap-6">
         <button 
           onClick={() => handleFeedback("LIKE")}
-          className={`flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-4 py-2 border transition-all duration-300 ${
+          className={`flex items-center justify-center gap-2 p-4 border transition-all duration-300 w-14 h-14 ${
             likeStatus === "LIKE" 
               ? "bg-cyan-500 border-cyan-400 text-black shadow-[0_0_20px_rgba(34,211,238,0.6)]" 
               : "border-zinc-800 text-zinc-500 hover:border-cyan-500/50 hover:text-cyan-400 hover:shadow-[0_0_10px_rgba(34,211,238,0.2)]"
           }`}
+          title="ME GUSTA"
         >
-          Útil
+          <ThumbsUp size={20} fill={likeStatus === "LIKE" ? "currentColor" : "none"} />
         </button>
         <button 
           onClick={() => handleFeedback("DISLIKE")}
-          className={`flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-4 py-2 border transition-all duration-300 ${
+          className={`flex items-center justify-center gap-2 p-4 border transition-all duration-300 w-14 h-14 ${
             likeStatus === "DISLIKE" 
               ? "bg-red-500 border-red-400 text-black shadow-[0_0_20px_rgba(239,68,68,0.6)]" 
               : "border-zinc-800 text-zinc-500 hover:border-red-500/50 hover:text-red-400 hover:shadow-[0_0_10px_rgba(239,68,68,0.2)]"
           }`}
+          title="NO ME GUSTA / CONFUSO"
         >
-          Confuso / Pobre
+          <ThumbsDown size={20} fill={likeStatus === "DISLIKE" ? "currentColor" : "none"} />
         </button>
       </div>
 

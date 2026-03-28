@@ -74,16 +74,32 @@ export async function submitVideoFeedbackAction(formData: FormData) {
       });
     }
 
-    // 2. Crear Feedback (Dudas o Motivo de Dislike)
+    // 2. Crear Feedback (Dudas o Motivo de Dislike) y Sincronizar con Chat
     if (content && content.trim() !== "") {
-      await prisma.feedback.create({
-        data: {
-          userId: session.id,
-          videoId: videoId,
-          content: content,
-          isPrivate: true,
-        },
-      });
+      const video = await prisma.video.findUnique({ where: { id: videoId } });
+      const admin = await prisma.user.findFirst({ where: { role: "ADMIN" } });
+      
+      const formattedContent = `[DUDA_V\u00cdDEO: ${video?.title || 'Generall'}]\n\n${content}`;
+
+      await Promise.all([
+        prisma.feedback.create({
+          data: {
+            userId: session.id,
+            videoId: videoId,
+            content: content,
+            isPrivate: true,
+          },
+        }),
+        admin ? prisma.message.create({
+          data: {
+            content: formattedContent,
+            senderId: session.id,
+            receiverId: admin.id,
+          }
+        }) : Promise.resolve()
+      ]);
+      
+      if (admin) revalidatePath("/dashboard/chat");
     }
 
     revalidatePath(`/cursos/${videoId}`);
