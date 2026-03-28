@@ -157,20 +157,25 @@ export async function getConversationAction(otherUserId?: string, videoId?: stri
 
 /**
  * Recupera la lista de conversaciones recientes para el Administrador.
- * Segmentado por Alumno y Vídeo.
+ * Segmentado por Alumno y V\u00eddeo. Calcula mensajes pendientes por hilo.
  */
 export async function getAdminInboxAction() {
   try {
     const session = await getSession();
     if (!session || session.role !== "ADMIN") return { error: "No autorizado." };
 
-    // Buscamos todos los mensajes donde el receptor o emisor es el admin
-    // pero agrupamos lógicamente por (studentId, videoId)
+    // Buscamos todos los mensajes que involucren a un estudiante
     const messages = await (prisma.message as any).findMany({
+      where: {
+        OR: [
+          { sender: { role: "STUDENT" } },
+          { receiver: { role: "STUDENT" } }
+        ]
+      },
       orderBy: { createdAt: "desc" },
       include: {
-        sender: { select: { id: true, name: true, role: true } },
-        receiver: { select: { id: true, name: true, role: true } },
+        sender: { select: { id: true, name: true, role: true, email: true } },
+        receiver: { select: { id: true, name: true, role: true, email: true } },
         video: { select: { id: true, title: true } }
       }
     }) as any[];
@@ -178,27 +183,34 @@ export async function getAdminInboxAction() {
     const threadsMap = new Map();
 
     messages.forEach(msg => {
-      const student = msg.sender.role === "STUDENT" ? msg.sender : msg.receiver;
-      if (student.role !== "STUDENT") return;
-
+      const isFromStudent = msg.sender.role === "STUDENT";
+      const student = isFromStudent ? msg.sender : msg.receiver;
       const threadKey = `${student.id}-${msg.videoId || 'general'}`;
       
-      if (!threadsMap.has(threadKey)) {
+      const existingThread = threadsMap.get(threadKey);
+      
+      if (!existingThread) {
         threadsMap.set(threadKey, {
           id: student.id,
           name: student.name,
+          email: student.email,
           videoId: msg.videoId,
           videoTitle: msg.video?.title || "CONSULTA GENERAL",
           lastMessage: msg.content,
           lastMessageAt: msg.createdAt,
-          unread: false // Implementable con un campo 'read' en Message
+          unreadCount: (msg.receiver.role === "ADMIN" && !msg.isRead) ? 1 : 0
         });
+      } else {
+        // Si el mensaje es para un admin y no est\u00e1 le\u00eddo, sumamos al contador del hilo
+        if (msg.receiver.role === "ADMIN" && !msg.isRead) {
+          existingThread.unreadCount += 1;
+        }
       }
     });
 
     return { inbox: Array.from(threadsMap.values()) };
   } catch (error) {
-    console.error("Error inbox:", error);
+    console.error("[INBOX-ACTION-ERROR]:", error);
     return { error: "Error al cargar la bandeja de entrada." };
   }
 }

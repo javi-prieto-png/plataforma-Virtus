@@ -69,6 +69,11 @@ export default function AdminInboxPage() {
               </div>
 
               <div className="mt-4 md:mt-0 flex items-center gap-4 relative z-10">
+                {item.unreadCount > 0 && (
+                  <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow-[0_0_10px_rgba(239,68,68,0.5)] animate-pulse">
+                    {item.unreadCount}
+                  </div>
+                )}
                 <div className="px-4 py-1 border border-cyan-500/20 text-[9px] text-cyan-400 uppercase tracking-widest font-bold bg-cyan-500/5 group-hover:bg-cyan-500/10 transition-colors">
                   Responder Hilo
                 </div>
