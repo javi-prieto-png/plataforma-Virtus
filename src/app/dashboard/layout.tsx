@@ -4,7 +4,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { logoutAction } from "@/actions/auth";
 import SidebarManager from "@/components/layout/SidebarManager";
-import BackButton from "@/components/common/BackButton";
 
 export default async function DashboardLayout({
   children,
@@ -64,7 +63,6 @@ export default async function DashboardLayout({
   return (
     <SidebarManager sidebarContent={sidebarContent}>
       {children}
-      <BackButton />
     </SidebarManager>
   );
 }

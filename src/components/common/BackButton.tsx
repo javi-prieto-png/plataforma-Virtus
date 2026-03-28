@@ -14,10 +14,10 @@ export default function BackButton() {
   return (
     <button
       onClick={() => router.back()}
-      className="fixed bottom-8 left-8 z-[60] flex items-center gap-2 px-4 py-2 bg-black/80 backdrop-blur-md border border-cyan-500/30 text-cyan-400 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-cyan-500 hover:text-black hover:border-cyan-500 hover:shadow-[0_0_20px_rgba(34,211,238,0.4)] transition-all group"
+      className="fixed bottom-6 left-6 z-[70] flex items-center gap-1 px-2.5 py-1.5 bg-black/80 backdrop-blur-md border border-zinc-900 text-zinc-500 text-[10px] hover:border-cyan-500/50 hover:text-cyan-400 transition-all group"
     >
-      <ChevronLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
-      Volver al Nivel Anterior
+      <ChevronLeft size={12} className="group-hover:-translate-x-0.5 transition-transform" />
+      volver
     </button>
   );
 }
