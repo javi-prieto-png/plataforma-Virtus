@@ -178,33 +178,36 @@ export async function getAdminInboxAction() {
     const threadsMap = new Map();
 
     messages.forEach(msg => {
-      // Identificar al estudiante involucrado
-      let student = null;
+      // Identificar al interlocutor (prioridad Estudiante > Otros)
+      let interlocutor = null;
       if (msg.sender && msg.sender.role === "STUDENT") {
-        student = msg.sender;
+        interlocutor = msg.sender;
       } else if (msg.receiver && msg.receiver.role === "STUDENT") {
-        student = msg.receiver;
+        interlocutor = msg.receiver;
+      } else {
+        // Para pruebas Admin-Admin o mensajes de sistema
+        interlocutor = (msg.senderId !== session.userId) ? msg.sender : msg.receiver;
       }
 
-      if (!student) return; // Saltar mensajes que no involucren a un estudiante
+      if (!interlocutor) return;
       
-      const threadKey = `${student.id}-${msg.videoId || 'general'}`;
+      const threadKey = `${interlocutor.id}-${msg.videoId || 'general'}`;
       const existingThread = threadsMap.get(threadKey);
       
       if (!existingThread) {
         threadsMap.set(threadKey, {
-          id: student.id,
-          name: student.name,
-          email: student.email,
+          id: interlocutor.id,
+          name: interlocutor.name,
+          email: interlocutor.email,
           videoId: msg.videoId,
           videoTitle: msg.video?.title || "CONSULTA GENERAL",
           lastMessage: msg.content,
           lastMessageAt: msg.createdAt,
-          unreadCount: (msg.receiver.role === "ADMIN" && !msg.isRead) ? 1 : 0
+          unreadCount: (msg.receiverId === session.userId && !msg.isRead) ? 1 : 0
         });
       } else {
-        // Si el mensaje es para un admin y no está leído, sumamos al contador del hilo
-        if (msg.receiver.role === "ADMIN" && !msg.isRead) {
+        // Sumar al contador si el mensaje es para el admin actual y no est\u00e1 le\u00eddo
+        if (msg.receiverId === session.userId && !msg.isRead) {
           existingThread.unreadCount += 1;
         }
       }
