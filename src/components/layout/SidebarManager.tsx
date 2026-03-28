@@ -1,7 +1,6 @@
-"use client";
-
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 interface SidebarManagerProps {
   sidebarContent: ReactNode;
@@ -11,6 +10,12 @@ interface SidebarManagerProps {
 
 export default function SidebarManager({ sidebarContent, children, isAdmin }: SidebarManagerProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Close sidebar when pathname changes (navigation)
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
 
   return (
     <div className="flex min-h-screen bg-black text-white relative">
