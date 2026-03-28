@@ -95,7 +95,7 @@ export async function submitVideoFeedbackAction(formData: FormData) {
             content: formattedContent,
             senderId: session.id,
             receiverId: admin.id,
-            videoId: videoId, // V\u00ednculo formal
+            videoId: videoId as any, // V\u00ednculo formal
           }
         }) : Promise.resolve()
       ]);

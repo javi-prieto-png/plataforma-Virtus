@@ -69,9 +69,9 @@ export async function sendMessageAction(formData: FormData) {
         sender: { select: { name: true, email: true } },
         receiver: { select: { name: true, email: true } },
       }
-    });
+    }) as any;
 
-    // 📧 Sistema de Alertas por Correo
+    // \ud83d\udce7 Sistema de Alertas por Correo
     await sendMail({
       to: newMessage.receiver.email,
       subject: `Nuevo mensaje en VIRTUS de ${newMessage.sender.name}`,
@@ -120,7 +120,7 @@ export async function getConversationAction(otherUserId?: string, videoId?: stri
               { senderId: targetId, receiverId: session.userId },
             ]
           },
-          { videoId: videoId || null }
+          { videoId: (videoId as any) || null }
         ]
       },
       orderBy: { createdAt: "asc" },
@@ -128,7 +128,7 @@ export async function getConversationAction(otherUserId?: string, videoId?: stri
         sender: { select: { name: true, role: true } },
         video: { select: { title: true } }
       }
-    });
+    }) as any[];
 
     return { messages };
   } catch (error) {
@@ -154,7 +154,7 @@ export async function getAdminInboxAction() {
         receiver: { select: { id: true, name: true, role: true } },
         video: { select: { id: true, title: true } }
       }
-    });
+    }) as any[];
 
     const threadsMap = new Map();
 
@@ -204,7 +204,7 @@ export async function getStudentInboxAction() {
       include: {
         video: { select: { id: true, title: true } }
       }
-    });
+    }) as any[];
 
     const threadsMap = new Map();
 
