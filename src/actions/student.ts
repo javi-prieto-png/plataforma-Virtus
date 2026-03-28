@@ -100,7 +100,14 @@ export async function submitVideoFeedbackAction(formData: FormData) {
         }) : Promise.resolve()
       ]);
       
-      if (admin) revalidatePath("/dashboard/chat");
+      console.info(`[CHAT-SYNC] Mensaje de d\u00fada creado para alumno ${session.id} en video ${videoId}. Receptor Admin: ${admin?.id || 'NINGUNO'}`);
+
+      if (admin) {
+        revalidatePath("/dashboard/chat");
+        revalidatePath("/dashboard/chat/inbox");
+        revalidatePath("/admin/chat");
+        revalidatePath("/admin");
+      }
     }
 
     revalidatePath(`/cursos/${videoId}`);

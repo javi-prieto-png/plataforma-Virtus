@@ -115,8 +115,8 @@ export async function getConversationAction(otherUserId?: string, videoId?: stri
       await (prisma.message as any).updateMany({
         where: {
           senderId: targetId,
-          receiverId: session.userId,
-          videoId: videoId || null,
+          receiver: { role: "ADMIN" }, // Cualquier admin que haya recibido consulta
+          videoId: (videoId as any) || null,
           isRead: false
         },
         data: { isRead: true }
@@ -126,12 +126,19 @@ export async function getConversationAction(otherUserId?: string, videoId?: stri
     const messages = await (prisma.message as any).findMany({
       where: {
         AND: [
-          {
-            OR: [
-              { senderId: session.userId, receiverId: targetId },
-              { senderId: targetId, receiverId: session.userId },
-            ]
-          },
+          session.role === "ADMIN" 
+          ? {
+              OR: [
+                { senderId: targetId },
+                { receiverId: targetId },
+              ]
+            }
+          : {
+              OR: [
+                { senderId: session.userId, receiverId: targetId },
+                { senderId: targetId, receiverId: session.userId },
+              ]
+            },
           { videoId: (videoId as any) || null }
         ]
       },
