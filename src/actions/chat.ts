@@ -227,7 +227,7 @@ export async function getAdminInboxAction() {
 export async function getStudentInboxAction() {
   try {
     const session = await getSession();
-    if (!session || session.role !== "STUDENT") return { error: "No autorizado." };
+    if (!session) return { error: "No autorizado." };
 
     const messages = await (prisma.message as any).findMany({
       where: {
