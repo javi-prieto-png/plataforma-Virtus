@@ -24,7 +24,7 @@ export default function StudentInboxPage() {
       <header className="mb-10 flex justify-between items-end">
         <div>
           <h2 className="text-2xl font-light tracking-widest text-white uppercase">
-            Mi Buz\u00f3n <span className="text-cyan-400 font-bold">MENSAJES_VIRTUS</span>
+            Mi Buzon <span className="text-cyan-400 font-bold">MENSAJES_VIRTUS</span>
           </h2>
           <p className="text-zinc-500 text-[10px] tracking-[0.4em] uppercase mt-2">
             Seguimiento de tus dudas y consultas directas

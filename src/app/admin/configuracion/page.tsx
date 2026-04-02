@@ -44,7 +44,7 @@ export default function AdminConfigPage() {
     <div className="animate-in fade-in duration-700">
       <header className="mb-12 border-b border-zinc-900 pb-8 uppercase tracking-widest">
         <h2 className="text-2xl font-light text-white">
-          Configuración <span className="text-cyan-400 font-bold">VIRTUS_CORE</span>
+          Configuracion <span className="text-cyan-400 font-bold">VIRTUS_CORE</span>
         </h2>
         <p className="text-zinc-600 text-[10px] tracking-[0.4em] mt-2">Gestión de privilegios y categorías de sistema</p>
       </header>
